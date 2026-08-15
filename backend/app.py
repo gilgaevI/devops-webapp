@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from flask import Flask, jsonify
+from flask import Flask, jsonify, requests
 app = Flask(__name__)
 def get_db_connection():
     return psycopg2.connect(
@@ -66,6 +66,38 @@ def get_servers():
             "ram": server[4]
         })
     return jsonify(result)
+@app.route("/servers", methods=["POST"])
+def create_server():
+    data = request.json
+    conn = psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database="postgres"
+    )
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        INSERT INTO servers (name, status, cpu, ram)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id;
+        """,
+        (
+            data["name"],
+            data["status"],
+            data["cpu"],
+            data["ram"]
+        )
+    )
+    server_id = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({
+        "id": server_id,
+        "message": "Server created"
+    }), 201
 if __name__ == '__main__':
     create_table()
     app.run(host="0.0.0.0", port=5000)
