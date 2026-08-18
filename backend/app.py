@@ -130,6 +130,38 @@ def update_server(server_id):
             cursor.close()
         if conn:
             conn.close()
+@app.route("/servers/<int:server_id>", methods=["DELETE"])
+def delete_server(server_id):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT id FROM servers WHERE id = %s;",
+            (server_id,)
+        )
+        server = cursor.fetchone()
+        if not server:
+            return jsonify({"error": "Server not found"}), 404
+        cursor.execute(
+            """
+            DELETE FROM servers
+            WHERE id = %s;
+            """,
+            (server_id,)
+        )
+        conn.commit()
+        return jsonify({"message": "Server deleted"}), 200
+    except Exception:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 if __name__ == '__main__':
     create_table()
     app.run(host="0.0.0.0", port=5000)
