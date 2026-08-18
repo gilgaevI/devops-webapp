@@ -60,6 +60,39 @@ def get_servers():
             "ram": server[4]
         })
     return jsonify(result)
+@app.route("/servers/<int:server_id>", methods=["GET"])
+def get_server(server_id):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT id, name, status, cpu, ram
+            FROM servers
+            WHERE id = %s;
+            """,
+            (server_id,)
+        )
+        server = cursor.fetchone()
+        if not server:
+            return jsonify({"error": "Server not found"}), 404
+        result = {
+            "id": server[0],
+            "name": server[1],
+            "status": server[2],
+            "cpu": server[3],
+            "ram": server[4]
+        }
+        return jsonify(result), 200
+    except Exception:
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 @app.route("/servers", methods=["POST"])
 def create_server():
     data = request.json
