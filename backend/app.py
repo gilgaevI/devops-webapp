@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from flask import Flask, jsonify, requests
+from flask import Flask, jsonify, request
 app = Flask(__name__)
 def get_db_connection():
     return psycopg2.connect(
@@ -44,13 +44,7 @@ def database():
         return "Postgres connection failed", 500
 @app.route("/servers")
 def get_servers():
-    conn = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database="postgres"
-    )
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM servers;")
     servers = cursor.fetchall()
@@ -69,13 +63,7 @@ def get_servers():
 @app.route("/servers", methods=["POST"])
 def create_server():
     data = request.json
-    conn = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database="postgres"
-    )
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -98,6 +86,50 @@ def create_server():
         "id": server_id,
         "message": "Server created"
     }), 201
+@app.route("/servers/<int:server_id>", methods=["PUT"])
+def update_server(server_id):
+    data = request.json
+    allowed_fields = ["name", "status", "cpu", "ram"]
+    fields_to_update = []
+    values = []
+    for field in allowed_fields:
+        if field in data:
+            fields_to_update.append(f"{field} = %s")
+            values.append(data[field])
+    if not fields_to_update:
+        return jsonify({"error": "No fields to update"}), 400
+    values.append(server_id)
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT id FROM servers WHERE id = %s;",
+            (server_id,)
+        )
+        server = cursor.fetchone()
+        if not server:
+            return jsonify({"error": "Server not found"}), 404
+        cursor.execute(
+            f"""
+            UPDATE servers
+            SET {", ".join(fields_to_update)}
+            WHERE id = %s;
+            """,
+            values
+        )
+        conn.commit()
+        return jsonify({"message": "Server updated"}), 200
+    except Exception:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 if __name__ == '__main__':
     create_table()
     app.run(host="0.0.0.0", port=5000)
