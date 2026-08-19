@@ -96,6 +96,30 @@ def get_server(server_id):
 @app.route("/servers", methods=["POST"])
 def create_server():
     data = request.json
+    if not data:
+        return jsonify({"error": "JSON body is required"}), 400
+    required_fields = ["name", "status", "cpu", "ram"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({
+                "error": f"Missing field: {field}"
+            }), 400
+    if not isinstance(data["cpu"], int):
+        return jsonify({"error": "CPU must be an integer"}), 400
+    if not isinstance(data["ram"], int):
+        return jsonify({"error": "RAM must be an integer"}), 400
+    if not 0 <= data["cpu"] <= 100:
+        return jsonify({
+            "error": "CPU must be between 0 and 100"
+        }), 400
+    if data["ram"] <= 0:
+        return jsonify({
+            "error": "RAM must be greater than 0"
+        }), 400
+    if data["status"] not in ["up", "down"]:
+        return jsonify({
+            "error": "Status must be up or down"
+        }), 400
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
