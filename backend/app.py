@@ -146,7 +146,37 @@ def create_server():
 @app.route("/servers/<int:server_id>", methods=["PUT"])
 def update_server(server_id):
     data = request.json
+    if not data:
+        return jsonify({"error": "JSON body is required"}), 400
     allowed_fields = ["name", "status", "cpu", "ram"]
+    for field in data:
+        if field not in allowed_fields:
+            return jsonify({
+                "error": f"Field '{field}' is not allowed"
+            }), 400
+    if "cpu" in data:
+        if not isinstance(data["cpu"], int):
+            return jsonify({
+                "error": "CPU must be an integer"
+            }), 400
+        if not 0 <= data["cpu"] <= 100:
+            return jsonify({
+                "error": "CPU must be between 0 and 100"
+            }), 400
+    if "ram" in data:
+        if not isinstance(data["ram"], int):
+            return jsonify({
+                "error": "RAM must be an integer"
+            }), 400
+        if data["ram"] <= 0:
+            return jsonify({
+                "error": "RAM must be greater than 0"
+            }), 400
+    if "status" in data:
+        if data["status"] not in ["up", "down"]:
+            return jsonify({
+                "error": "Status must be up or down"
+            }), 400
     fields_to_update = []
     values = []
     for field in allowed_fields:
@@ -154,7 +184,9 @@ def update_server(server_id):
             fields_to_update.append(f"{field} = %s")
             values.append(data[field])
     if not fields_to_update:
-        return jsonify({"error": "No fields to update"}), 400
+        return jsonify({
+            "error": "No fields to update"
+        }), 400
     values.append(server_id)
     conn = None
     cursor = None
@@ -167,7 +199,9 @@ def update_server(server_id):
         )
         server = cursor.fetchone()
         if not server:
-            return jsonify({"error": "Server not found"}), 404
+            return jsonify({
+                "error": "Server not found"
+            }), 404
         cursor.execute(
             f"""
             UPDATE servers
@@ -177,11 +211,15 @@ def update_server(server_id):
             values
         )
         conn.commit()
-        return jsonify({"message": "Server updated"}), 200
+        return jsonify({
+            "message": "Server updated"
+        }), 200
     except Exception:
         if conn:
             conn.rollback()
-        return jsonify({"error": "Database error"}), 500
+        return jsonify({
+            "error": "Database error"
+        }), 500
     finally:
         if cursor:
             cursor.close()
