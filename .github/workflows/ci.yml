@@ -27,3 +27,13 @@ jobs:
 
       - name: Check Python syntax
         run: python -m py_compile backend/app.py
+
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build backend Docker image
+        run: docker build -t devops-webapp-backend ./backend
