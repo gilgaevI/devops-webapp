@@ -55,3 +55,44 @@ jobs:
           context: ./backend
           push: true
           tags: ghcr.io/gilgaevi/devops-webapp-backend:latest
+
+  deployment-test:
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    env:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Start application
+        run: docker compose up -d
+
+      - name: Check containers
+        run: docker compose ps
+
+      - name: Wait for backend
+        run: sleep 10
+
+      - name: Check health
+        run: curl --fail http://localhost/health
+
+      - name: Check database
+        run: curl --fail http://localhost/db
+
+      - name: Check servers API
+        run: curl --fail http://localhost/servers
+
+      - name: Show logs if something failed
+        if: failure()
+        run: docker compose logs
