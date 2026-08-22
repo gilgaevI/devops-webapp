@@ -93,6 +93,9 @@ jobs:
       - name: Check servers API
         run: curl --fail http://localhost/servers
 
+      - name: Run CRUD API tests
+        run: ./tests/api_test.sh
+
       - name: Show logs if something failed
         if: failure()
         run: docker compose logs
