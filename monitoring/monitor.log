@@ -1,0 +1,88 @@
+
+Check time: 2026-09-01 18:41:56
+
+==============================
+      DEVOPS WEBAPP MONITOR
+==============================
+
+[CONTAINERS]
+NAME                       IMAGE                                           COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+devops-webapp-backend-1    ghcr.io/gilgaevi/devops-webapp-backend:latest   "python app.py"          backend    26 minutes ago   Up 26 minutes (healthy)   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp
+devops-webapp-nginx-1      nginx:alpine                                    "/docker-entrypoint.…"   nginx      26 minutes ago   Up 25 minutes             0.0.0.0:80->80/tcp, :::80->80/tcp
+devops-webapp-postgres-1   postgres:16                                     "docker-entrypoint.s…"   postgres   26 minutes ago   Up 26 minutes (healthy)   5432/tcp
+
+[STATUS]
+Backend: OK
+Nginx: OK
+PostgreSQL: OK
+
+[RESOURCES]
+NAME                       CPU %     MEM USAGE / LIMIT     MEM %
+devops-webapp-nginx-1      0.00%     9.301MiB / 2.194GiB   0.41%
+devops-webapp-backend-1    0.01%     43.68MiB / 2.194GiB   1.94%
+devops-webapp-postgres-1   0.00%     61.66MiB / 2.194GiB   2.74%
+
+[DISK]
+Disk usage: 63%
+Disk usage is normal
+
+[SUMMARY]
+ALL CHECKS PASSED
+
+Check time: 2026-09-01 18:43:44
+==============================
+      DEVOPS WEBAPP MONITOR
+==============================
+
+[CONTAINERS]
+NAME                       IMAGE                                           COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+devops-webapp-backend-1    ghcr.io/gilgaevi/devops-webapp-backend:latest   "python app.py"          backend    27 minutes ago   Up 27 minutes (healthy)   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp
+devops-webapp-nginx-1      nginx:alpine                                    "/docker-entrypoint.…"   nginx      27 minutes ago   Up 27 minutes             0.0.0.0:80->80/tcp, :::80->80/tcp
+devops-webapp-postgres-1   postgres:16                                     "docker-entrypoint.s…"   postgres   27 minutes ago   Up 27 minutes (healthy)   5432/tcp
+
+[STATUS]
+Backend: OK
+Nginx: OK
+PostgreSQL: OK
+
+[RESOURCES]
+NAME                       CPU %     MEM USAGE / LIMIT     MEM %
+devops-webapp-nginx-1      0.00%     9.301MiB / 2.194GiB   0.41%
+devops-webapp-backend-1    0.01%     43.68MiB / 2.194GiB   1.94%
+devops-webapp-postgres-1   0.00%     61.66MiB / 2.194GiB   2.74%
+
+[DISK]
+Disk usage: 63%
+Disk usage is normal
+
+[SUMMARY]
+ALL CHECKS PASSED
+
+Check time: 2026-09-01 18:56:32
+==============================
+      DEVOPS WEBAPP MONITOR
+==============================
+
+[CONTAINERS]
+NAME                       IMAGE                                           COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+devops-webapp-backend-1    ghcr.io/gilgaevi/devops-webapp-backend:latest   "python app.py"          backend    4 minutes ago    Up 4 minutes (healthy)    5000/tcp
+devops-webapp-nginx-1      nginx:alpine                                    "/docker-entrypoint.…"   nginx      4 minutes ago    Up 4 minutes              0.0.0.0:80->80/tcp, :::80->80/tcp
+devops-webapp-postgres-1   postgres:16                                     "docker-entrypoint.s…"   postgres   40 minutes ago   Up 40 minutes (healthy)   5432/tcp
+
+[STATUS]
+Backend: OK
+Nginx: OK
+PostgreSQL: OK
+
+[RESOURCES]
+NAME                       CPU %     MEM USAGE / LIMIT     MEM %
+devops-webapp-nginx-1      0.00%     2.598MiB / 2.194GiB   0.12%
+devops-webapp-backend-1    0.01%     25.93MiB / 2.194GiB   1.15%
+devops-webapp-postgres-1   0.00%     61.55MiB / 2.194GiB   2.74%
+
+[DISK]
+Disk usage: 63%
+Disk usage is normal
+
+[SUMMARY]
+ALL CHECKS PASSED

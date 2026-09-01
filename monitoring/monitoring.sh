@@ -1,7 +1,12 @@
 #!/bin/bash
 
 FAILED=0
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOGFILE="$SCRIPT_DIR/monitor.log"
 
+exec >> "$LOGFILE" 2>&1
+echo
+echo "Check time: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "=============================="
 echo "      DEVOPS WEBAPP MONITOR"
 echo "=============================="
