@@ -1,5 +1,6 @@
 services:
   backend:
+    container_name: devops-backend
     image: ghcr.io/gilgaevi/devops-webapp-backend:latest
     environment:
       DB_HOST: postgres
@@ -20,6 +21,7 @@ services:
       retries: 5
       start_period: 5s
   postgres:
+    container_name: devops-postgres
     image: postgres:16
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -36,6 +38,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   nginx:
+    container_name: devops-nginx
     image: nginx:alpine
     ports:
       - "80:80"

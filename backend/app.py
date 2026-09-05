@@ -2,8 +2,10 @@ import os
 import logging
 import psycopg2
 from flask import Flask, jsonify, request
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
